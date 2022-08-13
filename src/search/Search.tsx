@@ -1,6 +1,11 @@
 import { onMount } from 'solid-js';
 import browser from 'webextension-polyfill';
 
+interface Url {
+  base: string;
+  replaceSpaceWith: string;
+}
+
 const processKey = (bar: HTMLInputElement, e: KeyboardEvent) => {
   switch (e.code) {
     case 'Enter': {
@@ -9,19 +14,8 @@ const processKey = (bar: HTMLInputElement, e: KeyboardEvent) => {
       // So we basically make an option page that binds to local storage, and whenever we init search below we load the search engines from local storage. It's pissfree!!!!!!
       // Actually, we'll have to load localstorage from
       browser.runtime.sendMessage({
-        type: 'open',
-        urls: [
-          `https://www.oxfordlearnersdictionaries.com/us/definition/english/${bar.value.replaceAll(
-            ' ',
-            '-'
-          )}`,
-          `https://www.google.com/search?q=${bar.value.replaceAll(' ', '+')}`,
-          `https://www.google.com/search?tbm=isch&q=${bar.value.replaceAll(
-            ' ',
-            '+'
-          )}`,
-          `https://www.merriam-webster.com/dictionary/${bar.value}`,
-        ],
+        type: 'lookup',
+        query: bar.value,
       });
 
       browser.runtime.sendMessage({ type: 'search' });
