@@ -1,0 +1,55 @@
+name: 🚀 CI
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**/*.md'
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typescript:
+    name: ʦ TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/install-deps
+
+      - name: 🔎 Typescript
+        run: pnpm run tsc
+
+  lint:
+    name: ⬣ Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/install-deps
+
+      - name: ⬣ Lint
+        run: pnpm run lint
+
+  test:
+    name: ⚡ Vitest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/install-deps
+
+      - name: ⚡ Vitest
+        timeout-minutes: 5
+        run: pnpm run test -- --coverage
+
+  build:
+    name: 📦 Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/install-deps
+
+      - name: 📦 Build
+        run: pnpm run build
+
+      - name: Web-Ext Lint
+        run: pnpm run webext:lint
