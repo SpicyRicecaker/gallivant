@@ -9,18 +9,24 @@ export interface Command {
   searchBarURL: string,
 }
 
-function search(tabs: Tabs.Tab[]) {
-  browser.tabs.sendMessage(tabs[0].id!, {
+export interface Message {
+  type: string,
+  urls?: string[]
+}
+
+function search(tab: Tabs.Tab) {
+  browser.tabs.sendMessage(tab.id!, {
     command: "search",
     searchBarURL: browser.runtime.getURL("src/search/index.html")
   } as Command);
 }
 
-browser.commands.onCommand.addListener((command) => {
+browser.commands.onCommand.addListener(async (command) => {
   switch (command) {
     case "search": {
       // create overlay on the current webpage
-      browser.tabs.query({ active: true, currentWindow: true }).then(search)
+      const currentTab = (await browser.tabs.query({ active: true, currentWindow: true }))[0];
+      search(currentTab);
       break;
     }
     default: {
@@ -30,11 +36,19 @@ browser.commands.onCommand.addListener((command) => {
 });
 
 // the content script should be able to toggle search
-browser.runtime.onMessage.addListener((message) => {
+browser.runtime.onMessage.addListener(async (message: Message) => {
   switch (message.type) {
     case "search": {
       // create overlay on the current webpage
-      browser.tabs.query({ active: true, currentWindow: true }).then(search)
+      const currentTab = (await browser.tabs.query({ active: true, currentWindow: true }))[0];
+      search(currentTab);
+      break;
+    }
+    // opens url in new tab
+    case "open": {
+      for (const url of message.urls!) {
+        await browser.tabs.create({ url });
+      }
       break;
     }
     default: {
