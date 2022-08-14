@@ -22,17 +22,23 @@ import type { Command } from '../background/main';
 
     const iframe = document.createElement('iframe');
     iframe.setAttribute("src", searchBarURL);
+    iframe.setAttribute("allowtransparency", "true");
+
     iframe.style.margin = "0";
     iframe.style.padding = "0";
-    iframe.style.border = "0";
+    iframe.style.border = "none";
+    iframe.style.background = "none"
 
-    iframe.style.position = 'fixed';
+        iframe.style.position = 'fixed'
     iframe.style.left = "10%";
     iframe.style.top = "40%";
-    iframe.style.zIndex = "999";
+    iframe.style.zIndex = "2147383647";
 
     iframe.style.width = "80%";
-    iframe.style.overflow = "hidden"
+    iframe.style.height = "3rem";
+    // iframe.style.boxShadow = "0px 12px 40px -21px rgba(0,0,0,0.75)";
+    // iframe.style.overflow = "hidden";
+
     iframe.className = 'gallivant-search'
 
     document.body.appendChild(iframe);

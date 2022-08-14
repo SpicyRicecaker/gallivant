@@ -53,7 +53,6 @@ export const Search = () => {
         onInput={(e: InputEvent) => {
           value = (e.target as any).value;
         }}
-        placeholder="[search]..."
       />
     </>
   );

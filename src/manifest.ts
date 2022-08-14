@@ -41,7 +41,8 @@ export function getManifest(): Manifest.WebExtensionManifest {
     commands: {
       search: {
         suggested_key: {
-          default: "Alt+F"
+          default: "Alt+F",
+          windows: "Ctrl+Alt+F",
         },
         description: "Search existing websites"
       },
