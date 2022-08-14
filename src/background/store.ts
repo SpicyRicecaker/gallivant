@@ -18,12 +18,11 @@ interface SearchSchema {
 }
 
 const createLocalStore = <T extends object>(name: string, init: T): [Store<T>, SetStoreFunction<T>] => {
-  // const rawJson = localStorage.getItem(name);
+  const rawJson = localStorage.getItem(name);
 
   // load json from localstore
-  // const [store, setStore]: [Store<T>, SetStoreFunction<T>] = createStore(rawJson ? JSON.parse(rawJson) : init);
+  const [store, setStore]: [Store<T>, SetStoreFunction<T>] = createStore(rawJson ? JSON.parse(rawJson) : init);
   // currently debugging and will probably change this a lot, so just setting it to init
-  const [store, setStore] = createStore<T>(init);
 
   createEffect(() => localStorage.setItem(name, JSON.stringify(store)))
 

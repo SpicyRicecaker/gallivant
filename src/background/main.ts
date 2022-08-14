@@ -32,6 +32,13 @@ browser.commands.onCommand.addListener(async (command) => {
       search(currentTab);
       break;
     }
+    // case "swapup": {
+    //   const 
+    //   break;
+    // }
+    // case "swapdown": {
+    //   break;
+    // }
     default: {
       break;
     }
@@ -60,7 +67,7 @@ browser.runtime.onMessage.addListener(async (message: Message) => {
       // iterate over all urls
       for (let i = 0; i < urls.length; i++) {
         const tabInfo = {
-          url: `${urls[i].base}${message.query!.replaceAll(' ', urls[i].replaceSpaceWith)}`, active: urls[i].active
+          url: `${urls[i].base}${urls[i].before.replaceAll(' ', urls[i].replaceSpaceWith)}${message.query!.replaceAll(' ', urls[i].replaceSpaceWith)}${urls[i].after.replaceAll(' ', urls[i].replaceSpaceWith)}`, active: urls[i].active
         }
 
         // attempt to update existing tabs
