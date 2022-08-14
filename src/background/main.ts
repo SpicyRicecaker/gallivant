@@ -1,4 +1,5 @@
 import browser, { Tabs } from 'webextension-polyfill';
+import { searchSchemas } from './store';
 
 browser.runtime.onInstalled.addListener(() => {
   console.log('Extension installed');
@@ -35,25 +36,9 @@ browser.commands.onCommand.addListener(async (command) => {
   }
 });
 
-// eventually replace with localstore
-const urls = [
-  {
-    base: 'https://www.oxfordlearnersdictionaries.com/us/definition/english/',
-    replaceSpaceWith: '-',
-  },
-  {
-    base: 'https://www.google.com/search?q=',
-    replaceSpaceWith: '+',
-  },
-  {
-    base: 'https://www.google.com/search?tbm=isch&q=',
-    replaceSpaceWith: '+',
-  },
-  {
-    base: 'https://www.merriam-webster.com/dictionary/',
-    replaceSpaceWith: ' ',
-  },
-];
+// Create set of urls => tab ids, which will keep track of which urls have binded tabs. This is usefull, because most times when a user searches, they don't want to keep creating more and more tabs but just reload the existing ones.
+// Small concern that if the user creates like a million urls without any actual urls, there will be a bunch of garbage ids in here. But this isn't that big of a concern since this cache basically gets reset upon the browser restarting.
+const urlToId: Map<string, number> = new Map();
 
 // the content script should be able to toggle search
 browser.runtime.onMessage.addListener(async (message: Message) => {
@@ -66,28 +51,32 @@ browser.runtime.onMessage.addListener(async (message: Message) => {
     }
     // opens url in new tab
     case "lookup": {
-      const lookup: boolean[] = new Array(urls.length);
-      for (let i = 0; i < lookup.length; i++) {
-        lookup[i] = true;
-      }
+      // get selected search schema
+      const selectedSchema = searchSchemas.find((s) => s.active)!;
+      const urls = selectedSchema.urls;
 
-      const tabs = await browser.tabs.query({});
-      for (const tab of tabs) {
-        // if we've already updated for the url, skip
-        const urlIdx = urls.findIndex((url, urlIndex) => lookup[urlIndex] && tab.url!.includes(url.base));
-        if (urlIdx !== -1) {
-          // do not create another tab, 
-          lookup[urlIdx] = false;
-          // simply update the tab with new url
-          await browser.tabs.update(tab.id!, { url: `${urls[urlIdx].base}${message.query!.replaceAll(' ', urls[urlIdx].replaceSpaceWith)}` })
+      // iterate over all urls
+      for (let i = 0; i < urls.length; i++) {
+        const tabInfo = {
+          url: `${urls[i].base}${message.query!.replaceAll(' ', urls[i].replaceSpaceWith)}`, active: urls[i].active
         }
-      }
 
-      // create leftovers
-      for (let i = 0; i < lookup.length; i++) {
-        if (lookup[i]) {
-          await browser.tabs.create({ url: `${urls[i].base}${message.query!.replaceAll(' ', urls[i].replaceSpaceWith)}` })
+        // attempt to update existing tabs
+        const tabId = urlToId.get(urls[i].base);
+        if (tabId) {
+          try {
+            const tab = await browser.tabs.get(tabId);
+            // if tab exists, simply update it with the new query
+            await browser.tabs.update(tab.id!, tabInfo);
+            continue;
+          } catch (e) {
+            // tab has been removed or whatever, this is fine and expected behavior
+          }
         }
+
+        // otherwise, create new tab and insert the thing into the map
+        const newTabId = (await browser.tabs.create(tabInfo)).id!;
+        urlToId.set(urls[i].base, newTabId);
       }
       break;
     }
@@ -95,4 +84,8 @@ browser.runtime.onMessage.addListener(async (message: Message) => {
       break;
     }
   }
+});
+
+browser.browserAction.onClicked.addListener(() => {
+  browser.tabs.create({ url: 'src/options/index.html' });
 });

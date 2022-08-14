@@ -1,10 +1,6 @@
 import { onMount } from 'solid-js';
 import browser from 'webextension-polyfill';
 
-interface Url {
-  base: string;
-  replaceSpaceWith: string;
-}
 
 const processKey = (bar: HTMLInputElement, e: KeyboardEvent) => {
   switch (e.code) {
@@ -26,6 +22,11 @@ const processKey = (bar: HTMLInputElement, e: KeyboardEvent) => {
         e.preventDefault();
         browser.runtime.sendMessage({ type: 'search' });
       }
+      break;
+    }
+    case 'Escape': {
+      e.preventDefault();
+      browser.runtime.sendMessage({ type: 'search' });
       break;
     }
     default: {

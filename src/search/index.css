@@ -14,5 +14,10 @@ body > input {
   width: 100%;
   heigth: 100%;
   padding: 1rem;
-  /* border: none; */
+  opacity: 80%;
+  border-radius: 0.5rem;
+  border: 1px solid white;
+  background-color: rgb(32, 33, 36);
+  color: rgb(233, 234, 237);
+  outline: none;
 }
