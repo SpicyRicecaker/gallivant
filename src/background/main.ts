@@ -15,10 +15,12 @@ export interface Message {
   query: string
 }
 
+const searchBarURL = browser.runtime.getURL("src/search/index.html");
+
 function search(tab: Tabs.Tab) {
   browser.tabs.sendMessage(tab.id!, {
     command: "search",
-    searchBarURL: browser.runtime.getURL("src/search/index.html")
+    searchBarURL
   } as Command);
 }
 

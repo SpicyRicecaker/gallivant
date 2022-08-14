@@ -17,46 +17,57 @@ import type { Command } from '../background/main';
       removeSearch();
       (<any>window).gallivant = false;
       return;
+    } else if ((<any>window).gallivant === false) {
+      enableSearch();
+      (<any>window).gallivant = true;
+      return;
     }
     (<any>window).gallivant = true;
 
     const iframe = document.createElement('iframe');
+
+    iframe.setAttribute("fetchpriority", "high");
     iframe.setAttribute("src", searchBarURL);
-    iframe.setAttribute("allowtransparency", "true");
+
+    // slightly slow....
+    iframe.style.boxShadow = "0px 5px 30px 0px rgba(0,0,0,0.5)";
 
     iframe.style.margin = "0";
     iframe.style.padding = "0";
-    iframe.style.border = "none";
+    iframe.style.border = "0";
+    iframe.style.borderRadius = "0.5em";
     iframe.style.background = "none"
 
-        iframe.style.position = 'fixed'
+    iframe.style.position = 'fixed'
     iframe.style.left = "10%";
     iframe.style.top = "40%";
     iframe.style.zIndex = "2147383647";
-
+    iframe.style.colorScheme = "normal";
     iframe.style.width = "80%";
-    iframe.style.height = "3rem";
-    // iframe.style.boxShadow = "0px 12px 40px -21px rgba(0,0,0,0.75)";
-    // iframe.style.overflow = "hidden";
-
-    iframe.className = 'gallivant-search'
+    // hardcoding solves everything 
+    iframe.style.height = "68px";
+    iframe.id = 'gallivant-search';
 
     document.body.appendChild(iframe);
   }
 
   /**
-   * Remove every beast from the page.
+   * Remove every searchbar from the page.
    */
   function removeSearch() {
-    let existingSearch = document.querySelectorAll(".gallivant-search");
-    for (const search of existingSearch) {
-      search.remove();
-    }
+    document.getElementById("gallivant-search")!.style.display = "none";
+  }
+
+  function enableSearch() {
+    const iframe = document.getElementById("gallivant-search")! as HTMLIFrameElement;
+    iframe.style.display = "block";
+    // need to focus iframe first before the content in it
+    iframe.focus();
+    (iframe.contentDocument?.getElementsByTagName("input")[0]! as HTMLInputElement).focus();
   }
 
   /**
    * Listen for messages from the background script.
-   * Call "insertBeast()" or "removeExistingBeasts()".
    */
   browser.runtime.onMessage.addListener((message: Command) => {
     switch (message.command) {

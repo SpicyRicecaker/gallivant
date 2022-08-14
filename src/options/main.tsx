@@ -17,14 +17,14 @@ const Options: Component = () => {
             <div>{searchSchema.name}</div>
             <label>
               is active searcher
-              <input type="radio" checked={searchSchema.active}></input>
+              <input type="radio" checked={searchSchema.active} />
             </label>
             <label>
               should shift focus
               <input
                 type="radio"
                 checked={searchSchema.shouldShiftFocus}
-              ></input>
+               />
             </label>
             <div>
               <For each={searchSchema.urls}>
@@ -32,23 +32,23 @@ const Options: Component = () => {
                   <div>
                     <label>
                       before
-                      <input value={url.before}></input>
+                      <input value={url.before} />
                     </label>
                     <label>
                       base
-                      <input value={url.base}></input>
+                      <input value={url.base} />
                     </label>
                     <label>
                       after
-                      <input value={url.after}></input>
+                      <input value={url.after} />
                     </label>
                     <label>
                       replace space with
-                      <input value={url.replaceSpaceWith}></input>
+                      <input value={url.replaceSpaceWith} />
                     </label>
                     <label>
                       focus this tab when searching
-                      <input type="radio" checked={url.active}></input>
+                      <input type="radio" checked={url.active} />
                     </label>
                   </div>
                 )}
@@ -61,4 +61,4 @@ const Options: Component = () => {
   );
 };
 
-render(() => <Options></Options>, element);
+render(() => <Options />, element);

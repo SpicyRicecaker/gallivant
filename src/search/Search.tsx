@@ -1,7 +1,6 @@
 import { onMount } from 'solid-js';
 import browser from 'webextension-polyfill';
 
-
 const processKey = (bar: HTMLInputElement, e: KeyboardEvent) => {
   switch (e.code) {
     case 'Enter': {
