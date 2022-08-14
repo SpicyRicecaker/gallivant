@@ -1,7 +1,7 @@
 {
-  "name": "solid-webext-starter",
-  "version": "0.0.0",
-  "description": "Vite+SolidJS Webextension",
+  "name": "gallivant",
+  "version": "0.1.0",
+  "description": "Search All The Engines, With One Keystroke",
   "type": "module",
   "scripts": {
     "dev": "vite",

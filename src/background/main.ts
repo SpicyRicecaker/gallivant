@@ -32,6 +32,13 @@ browser.commands.onCommand.addListener(async (command) => {
       search(currentTab);
       break;
     }
+    // case "swapup": {
+    //   const 
+    //   break;
+    // }
+    // case "swapdown": {
+    //   break;
+    // }
     default: {
       break;
     }
