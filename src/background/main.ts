@@ -69,7 +69,8 @@ browser.runtime.onMessage.addListener(async (message: ContentScriptRequest) => {
         }
 
         // attempt to update existing tabs
-        const tabId = urlToId.get(urls[i].base);
+        // KEY: we concatenate the name of the schema here so that identical links will belong to different schemas
+        const tabId = urlToId.get(`${selectedSchema.name}${urls[i].base}`);
         if (tabId) {
           try {
             const tab = await browser.tabs.get(tabId);
@@ -83,7 +84,7 @@ browser.runtime.onMessage.addListener(async (message: ContentScriptRequest) => {
 
         // otherwise, create new tab and insert the thing into the map
         const newTabId = (await browser.tabs.create(tabInfo)).id!;
-        urlToId.set(urls[i].base, newTabId);
+        urlToId.set(`${selectedSchema.name}${urls[i].base}`, newTabId);
       }
       break;
     }
