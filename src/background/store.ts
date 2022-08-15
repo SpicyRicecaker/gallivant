@@ -1,7 +1,7 @@
 import { createEffect } from 'solid-js';
 import { createStore, SetStoreFunction, Store } from 'solid-js/store';
 
-interface Url {
+export interface Url {
   base: string,
   replaceSpaceWith: string,
   before: string,
@@ -9,7 +9,7 @@ interface Url {
   active: boolean
 }
 
-interface SearchSchema {
+export interface SearchSchema {
   name: string,
   urls: Url[],
   active: boolean,
@@ -29,7 +29,7 @@ const createLocalStore = <T extends object>(name: string, init: T): [Store<T>, S
   return [store, setStore];
 }
 
-const initSearchSchemas = (): SearchSchema[] => {
+export const initSearchSchemas = (): SearchSchema[] => {
   const searchSchemas: SearchSchema[] = [
     {
       name: "English",
@@ -118,5 +118,7 @@ const initSearchSchemas = (): SearchSchema[] => {
   ];
   return searchSchemas;
 }
+
+console.log('loaded store');
 
 export const [searchSchemas, setSearchSchemas] = createLocalStore('searchSchemas', initSearchSchemas());

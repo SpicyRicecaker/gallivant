@@ -1,44 +1,40 @@
-import browser, { Tabs } from 'webextension-polyfill';
-import { searchSchemas } from './store';
+import { produce } from 'solid-js/store';
+import browser from 'webextension-polyfill';
+import { searchSchemas, setSearchSchemas } from './store';
 
 browser.runtime.onInstalled.addListener(() => {
   console.log('Extension installed');
 });
 
-export interface Command {
-  command: string,
-  searchBarURL: string,
+export type BackgroundRequest = {
+  variant: "toggleSearch",
+  searchBarSrc: string
 }
-
-export interface Message {
-  type: string,
+export type ContentScriptRequest = {
+  variant: "gimmesearchschemas",
+} | {
+  variant: "toggleSearch"
+} | {
+  variant: "lookupTerm",
   query: string
-}
+} | {
+  variant: "setActive",
+  idx: number
+};
 
-const searchBarURL = browser.runtime.getURL("src/search/index.html");
-
-function search(tab: Tabs.Tab) {
-  browser.tabs.sendMessage(tab.id!, {
-    command: "search",
-    searchBarURL
-  } as Command);
-}
+const searchBarSrc = browser.runtime.getURL("src/search/index.html");
 
 browser.commands.onCommand.addListener(async (command) => {
   switch (command) {
     case "search": {
       // create overlay on the current webpage
       const currentTab = (await browser.tabs.query({ active: true, currentWindow: true }))[0];
-      search(currentTab);
+      browser.tabs.sendMessage(currentTab.id!, {
+        variant: "toggleSearch",
+        searchBarSrc
+      } as BackgroundRequest);
       break;
     }
-    // case "swapup": {
-    //   const 
-    //   break;
-    // }
-    // case "swapdown": {
-    //   break;
-    // }
     default: {
       break;
     }
@@ -50,16 +46,18 @@ browser.commands.onCommand.addListener(async (command) => {
 const urlToId: Map<string, number> = new Map();
 
 // the content script should be able to toggle search
-browser.runtime.onMessage.addListener(async (message: Message) => {
-  switch (message.type) {
-    case "search": {
+browser.runtime.onMessage.addListener(async (message: ContentScriptRequest) => {
+  switch (message.variant) {
+    case "toggleSearch": {
       // create overlay on the current webpage
       const currentTab = (await browser.tabs.query({ active: true, currentWindow: true }))[0];
-      search(currentTab);
+      browser.tabs.sendMessage(currentTab.id!, {
+        variant: "toggleSearch",
+      } as BackgroundRequest);
       break;
     }
     // opens url in new tab
-    case "lookup": {
+    case "lookupTerm": {
       // get selected search schema
       const selectedSchema = searchSchemas.find((s) => s.active)!;
       const urls = selectedSchema.urls;
@@ -88,6 +86,20 @@ browser.runtime.onMessage.addListener(async (message: Message) => {
         urlToId.set(urls[i].base, newTabId);
       }
       break;
+    }
+    case "gimmesearchschemas": {
+      return Promise.resolve({ response: searchSchemas.map((s) => { return { name: s.name, active: s.active } }) });
+    }
+    case "setActive": {
+      setSearchSchemas(produce((prev) => {
+        for (let i = 0; i < prev.length; i++) {
+          if (message.idx === i) {
+            prev[i].active = true;
+          } else {
+            prev[i].active = false;
+          }
+        }
+      }))
     }
     default: {
       break;

@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import type { Command } from '../background/main';
+import type { BackgroundRequest } from '../background/main';
 
 (() => {
   /**
@@ -69,10 +69,10 @@ import type { Command } from '../background/main';
   /**
    * Listen for messages from the background script.
    */
-  browser.runtime.onMessage.addListener((message: Command) => {
-    switch (message.command) {
-      case "search": {
-        insertSearch(message.searchBarURL);
+  browser.runtime.onMessage.addListener((message: BackgroundRequest) => {
+    switch (message.variant) {
+      case "toggleSearch": {
+        insertSearch(message.searchBarSrc);
         break;
       }
       default: {

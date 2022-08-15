@@ -12,6 +12,7 @@
     "skipLibCheck": true,
     "outDir": "dist",
     "resolveJsonModule": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "strictNullChecks": true
   }
 }
