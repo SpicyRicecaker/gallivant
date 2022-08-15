@@ -55,12 +55,18 @@ import type { BackgroundRequest } from '../background/main';
    * Remove every searchbar from the page.
    */
   function removeSearch() {
-    document.getElementById("gallivant-search")!.style.display = "none";
+    const el = document.getElementById("gallivant-search")!;
+    
+    el.style.opacity = "0%";
+    el.style.pointerEvents = "none";
   }
 
   function enableSearch() {
     const iframe = document.getElementById("gallivant-search")! as HTMLIFrameElement;
-    iframe.style.display = "block";
+    // iframe.style.display = "block";
+    iframe.style.opacity = "100%";
+    iframe.style.pointerEvents = "all";
+
     // need to focus iframe first before the content in it
     iframe.focus();
     (iframe.contentDocument?.getElementsByTagName("input")[0]! as HTMLInputElement).focus();

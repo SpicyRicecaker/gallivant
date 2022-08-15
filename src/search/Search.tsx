@@ -48,8 +48,13 @@ export const Search = () => {
         } as ContentScriptRequest);
         break;
       }
-      case 'KeyF': {
-        if (e.altKey) {
+      // TODO currently bugged with IMES, where 1) closing the search causes the
+      // user to be unable to type using ime, and 2) prevent default does not
+      // work for ime characters. Check `compositionstart` and
+      // `compositionupdate` events
+      // opacity 0 + pointerevents none fixes 1) but feels hacky
+      case 'KeyG': {
+        if (e.ctrlKey) {
           e.preventDefault();
           browser.runtime.sendMessage({
             variant: 'toggleSearch',
