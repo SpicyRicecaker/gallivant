@@ -62,6 +62,13 @@ export const initSearchSchemas = (): SearchSchema[] => {
           after: '',
           active: false,
         },
+        {
+          base: 'https://en.wikipedia.org/wiki/',
+          replaceSpaceWith: '_',
+          before: '',
+          after: '',
+          active: false,
+        }
       ],
       active: true,
       shouldShiftFocus: true
