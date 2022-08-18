@@ -9,12 +9,12 @@
     "serve:firefox": "web-ext run --start-url about:debugging#/runtime/this-firefox --source-dir ./dist/ --firefox firefoxdeveloperedition",
     "serve:chrome": "web-ext run -t chromium --start-url \"https://github.com\" --source-dir ./dist/",
     "tsc": "tsc",
-    "build": "vite build",
+    "make": "vite build",
     "test": "vitest",
     "lint": "eslint .",
     "webext:lint": "web-ext lint -s ./dist",
     "dist": "web-ext build --source-dir=./dist --overwrite-dest",
-    "product": "pnpm build && pnpm dist"
+    "product": "bun make && bun dist"
   },
   "postcss": {
     "plugins": {

@@ -14,12 +14,21 @@
       /* box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px; */
       /* gap: 1rem; */
       border-radius: 1rem;
+
       & > .base {
         display: flex;
         flex-direction: column;
         & input {
           font-size: 1.5rem;
         }
+      }
+
+      & > .before {
+        width: 10%;
+      }
+
+      & > .after {
+        width: 10%;
       }
 
       /* & > .beforeAfter {
@@ -35,6 +44,9 @@
       & > .final {
         /* color: rgba(0, 0, 0, 0.2); */
         font-size: 1rem;
+        padding: 0.5rem;
+        background-color: rgb(248, 248, 248);
+        border-radius: 0.5rem;
         & > span {
           color: rgba(00, 50, 150, 0.8);
         }
@@ -42,25 +54,91 @@
 
       & > .space {
         /* display: flex; */
+        width: 10%;
         gap: 1rem;
         align-items: center;
         justify-content: center;
+      }
+      /* & > .switch {
+
+      } */
+      & input:not([type='radio']),
+      .final {
+        outline: none;
+        border: none;
+        background-color: rgb(248, 248, 248);
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        color: rgba(0, 0, 0, 0.6);
+        flex: 0;
+
+        transition: background 0.3s;
+
+        &:focus {
+          background: linear-gradient(
+            to right,
+            rgba(255, 184, 179, 0) 50%,
+            rgba(255, 244, 179, 0.8)
+          );
+        }
+
+        clip-path: polygon(
+          0 0,
+          calc(100% - 30px) 0,
+          100% 50%,
+          calc(100% - 30px) 100%,
+          0 100%
+        );
       }
     }
   }
 }
 
-input {
-  outline: none;
-  border: none;
-  background-color: rgb(248, 248, 248);
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  color: rgba(0, 0, 0, 0.6);
-  flex: 0;
-}
-
 svg {
   color: rgba(0, 0, 0, 0.1);
   width: 20vw;
+}
+
+.inactiveRadio {
+  opacity: 20%;
+  pointer-events: none;
+}
+
+.entriesPage {
+  display: flex;
+  flex-direction: column;
+  & > .entriesBar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    & > :nth-child(1) {
+      flex: 0;
+      outline: none;
+      border: none;
+      & > svg {
+        min-width: 24px;
+        color: var(--light-dark);
+        width: 100%;
+      }
+    }
+  }
+}
+
+.nopacity {
+  opacity: 20%;
+  pointer-events: none;
+}
+
+.entries {
+  display: flex;
+  flex-direction: column;
+}
+
+.entry {
+  display: flex;
+  flex-direction: row;
+  padding: 1rem;
+  gap: 1rem;
 }
