@@ -46,6 +46,7 @@ import type { BackgroundRequest } from '../background/main';
     iframe.style.width = "80%";
     // hardcoding solves everything 
     iframe.style.height = "68px";
+    iframe.style.colorScheme = "light";
     iframe.id = 'gallivant-search';
 
     document.body.appendChild(iframe);

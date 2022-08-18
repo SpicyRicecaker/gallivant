@@ -5,9 +5,9 @@ import { type ContentScriptRequest } from 'src/background/main';
 
 type SearchTitles = { name: string; active: boolean };
 
-const getSchemas = async (): Promise<SearchTitles[]> => {
+const getSearchSchemaNames = async (): Promise<SearchTitles[]> => {
   const res: { response: SearchTitles[] } = await browser.runtime.sendMessage({
-    variant: 'gimmesearchschemas',
+    variant: 'getSearchSchemaNames',
   } as ContentScriptRequest);
   return res.response;
 };
@@ -16,7 +16,7 @@ export const Search = () => {
   let value = '';
   let bar: HTMLInputElement;
 
-  const [searchSchemas, { mutate, refetch }] = createResource(getSchemas);
+  const [searchSchemas, { mutate, refetch }] = createResource(getSearchSchemaNames);
 
   const [active, setActive] = createSignal('');
 

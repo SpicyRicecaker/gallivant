@@ -11,7 +11,7 @@ export type BackgroundRequest = {
   searchBarSrc: string
 }
 export type ContentScriptRequest = {
-  variant: "gimmesearchschemas",
+  variant: "getSearchSchemaNames",
 } | {
   variant: "toggleSearch"
 } | {
@@ -20,6 +20,8 @@ export type ContentScriptRequest = {
 } | {
   variant: "setActive",
   idx: number
+} | {
+  variant: "getSearchSchemas",
 };
 
 const searchBarSrc = browser.runtime.getURL("src/search/index.html");
@@ -88,7 +90,10 @@ browser.runtime.onMessage.addListener(async (message: ContentScriptRequest) => {
       }
       break;
     }
-    case "gimmesearchschemas": {
+    case "getSearchSchemas": {
+      return Promise.resolve({ response: JSON.stringify(searchSchemas) })
+    }
+    case "getSearchSchemaNames": {
       return Promise.resolve({ response: searchSchemas.map((s) => { return { name: s.name, active: s.active } }) });
     }
     case "setActive": {
