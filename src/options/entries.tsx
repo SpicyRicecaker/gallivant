@@ -32,6 +32,10 @@ const Entries: Component<{ children: JSXElement; add: () => void }> = (
       >
         <AiOutlinePlusCircle size={24} />
       </button>
+      <div>
+        <button>import</button>
+        <button>export</button>
+      </div>
     </div>
   );
 };

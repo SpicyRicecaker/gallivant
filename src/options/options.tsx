@@ -1,4 +1,3 @@
-/* @refresh reload */
 import Entries from './entries';
 import Entry from './entry';
 
@@ -27,7 +26,7 @@ const Options: Component = () => {
               setSearchSchemas(
                 produce((prev) => {
                   prev.push({
-                    name: 'temp',
+                    name: '',
                     urls: [],
                     active: false,
                     shouldShiftFocus: true,
@@ -58,6 +57,30 @@ const Options: Component = () => {
           <For each={searchSchemas[y()].urls}>
             {(url, x) => (
               <Entry
+                moveUp={() => {
+                  setSearchSchemas(
+                    produce((prev) => {
+                      const prevIdx = x() - 1;
+                      if (prevIdx >= 0) {
+                        const temp = prev[y()].urls[prevIdx];
+                        prev[y()].urls[prevIdx] = prev[y()].urls[x()];
+                        prev[y()].urls[x()] = temp;
+                      }
+                    })
+                  );
+                }}
+                moveDown={() => {
+                  setSearchSchemas(
+                    produce((prev) => {
+                      const prevIdx = x() + 1;
+                      if (prevIdx < 8) {
+                        const temp = prev[y()].urls[prevIdx];
+                        prev[y()].urls[prevIdx] = prev[y()].urls[x()];
+                        prev[y()].urls[x()] = temp;
+                      }
+                    })
+                  );
+                }}
                 remove={() => {
                   setSearchSchemas(
                     produce((prev) => {
@@ -70,6 +93,7 @@ const Options: Component = () => {
                   <label class={styles.base}>
                     <input
                       value={url.base}
+                      placeholder="your search url"
                       onInput={(e: InputEvent) => {
                         setSearchSchemas(
                           produce(
@@ -175,6 +199,30 @@ const Options: Component = () => {
         <For each={searchSchemas}>
           {(searchSchema, y) => (
             <Entry
+              moveUp={() => {
+                setSearchSchemas(
+                  produce((prev) => {
+                    const prevIdx = y() - 1;
+                    if (prevIdx >= 0) {
+                      const temp = prev[prevIdx];
+                      prev[prevIdx] = prev[y()];
+                      prev[y()] = temp;
+                    }
+                  })
+                );
+              }}
+              moveDown={() => {
+                setSearchSchemas(
+                  produce((prev) => {
+                    const prevIdx = y() + 1;
+                    if (prevIdx < searchSchemas.length) {
+                      const temp = prev[prevIdx];
+                      prev[prevIdx] = prev[y()];
+                      prev[y()] = temp;
+                    }
+                  })
+                );
+              }}
               remove={() => {
                 setSearchSchemas(
                   produce((prev) => {
@@ -196,10 +244,10 @@ const Options: Component = () => {
                   selected() === y() ? styles.selected : ''
                 }`}
               >
-                {/* <h2>{searchSchema.name}</h2> */}
                 <input
                   class={styles.final}
                   value={searchSchema.name}
+                  placeholder="required search engine name"
                   onClick={(e: MouseEvent) => e.stopPropagation()}
                   onInput={(e: InputEvent) => {
                     setSearchSchemas(
