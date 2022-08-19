@@ -8,7 +8,9 @@ body {
 }
 
 :root {
-  --light-dark: rgba(0, 0, 0, 0.6)
+  --light-dark: rgba(0, 0, 0, 0.6);
+  --light-back: rgb(248, 248, 248);
+  --dark-back: rgb(220, 220, 220);
 }
 
 #app {

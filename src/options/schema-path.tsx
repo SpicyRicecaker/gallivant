@@ -1,15 +1,15 @@
 import {
   type Component,
-  type JSX,
   createContext,
   useContext,
   createSignal,
+  type JSXElement,
 } from 'solid-js';
 
 // has a default value of '', which should in theory never be used, and might cause invisible bugs
 const SchemaPathContext = createContext(createSignal('unreachable'));
 
-export const SchemaPath: Component<{ children: JSX.Element }> = (props) => {
+export const SchemaPath: Component<{ children: JSXElement }> = (props) => {
   const schemaPath = createSignal('');
 
   return (

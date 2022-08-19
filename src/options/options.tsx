@@ -1,10 +1,11 @@
+/* @refresh reload */
 import Entries from './entries';
 import Entry from './entry';
 
 import { searchSchemas, setSearchSchemas } from './schemas';
 import { produce } from 'solid-js/store';
 
-import { Component, Show } from 'solid-js';
+import { Component, createSignal, Show } from 'solid-js';
 import { For } from 'solid-js';
 
 import styles from './index.module.css';
@@ -13,6 +14,8 @@ import { SearchSchema, Url } from 'src/background/store';
 
 const Options: Component = () => {
   const [schemaPath, setSchemaPath] = useSchemaPathContext();
+
+  const [selected, setSelected] = createSignal(-1);
 
   let y = () => searchSchemas.findIndex((s) => s.name === schemaPath());
 
@@ -181,12 +184,34 @@ const Options: Component = () => {
               }}
             >
               <div
-                onClick={() => {
-                  setSchemaPath(searchSchema.name);
+                onClick={(_) => {
+                  if (selected() === y()) {
+                    setSchemaPath(searchSchema.name);
+                    setSelected(-1);
+                  } else {
+                    setSelected(y());
+                  }
                 }}
+                class={`${styles.schema} ${
+                  selected() === y() ? styles.selected : ''
+                }`}
               >
-                <h2>{searchSchema.name}</h2>
-                <label>
+                {/* <h2>{searchSchema.name}</h2> */}
+                <input
+                  class={styles.final}
+                  value={searchSchema.name}
+                  onClick={(e: MouseEvent) => e.stopPropagation()}
+                  onInput={(e: InputEvent) => {
+                    setSearchSchemas(
+                      produce(
+                        (prev) => (prev[y()].name = (e.target as any).value)
+                      )
+                    );
+                  }}
+                />
+
+                <hr></hr>
+                <label onClick={(e) => e.stopPropagation()}>
                   is active searcher
                   <input
                     type="radio"
@@ -195,11 +220,14 @@ const Options: Component = () => {
                     onInput={(_) => {
                       setSearchSchemas(
                         produce((prev) => {
-                          for (let i = 0; i < prev.length; i++) {
-                            if (i == y()) {
-                              prev[y()].active = true;
-                            } else {
-                              prev[y()].active = false;
+                          // for some reason, (probably because clicking label causes two click events to be sent, sometimes there's a bug where it double toggles, leaving none. This is BAD, so we're putting a guard here)
+                          if (!prev[y()].active) {
+                            for (let i = 0; i < prev.length; i++) {
+                              if (i == y()) {
+                                prev[y()].active = true;
+                              } else {
+                                prev[y()].active = false;
+                              }
                             }
                           }
                         })
@@ -207,7 +235,7 @@ const Options: Component = () => {
                     }}
                   />
                 </label>
-                <label>
+                <label onClick={(e) => e.stopPropagation()}>
                   should shift focus
                   <input
                     type="checkbox"

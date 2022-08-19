@@ -9,7 +9,7 @@ if (!element) {
   throw new Error('No app element found');
 }
 
-import Options from './Options';
+import Options from './options';
 
 render(
   () => (
