@@ -5,6 +5,7 @@ import './index.css';
 import { SchemaPath } from './schema-path';
 
 const element = document.getElementById('app');
+
 if (!element) {
   throw new Error('No app element found');
 }

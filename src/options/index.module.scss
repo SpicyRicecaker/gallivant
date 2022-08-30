@@ -1,4 +1,4 @@
-@define-mixin arrowInput {
+@mixin arrowInput {
   outline: none;
   border: none;
   background-color: var(--light-back);
@@ -25,6 +25,26 @@
     calc(100% - 30px) 100%,
     0 100%
   );
+}
+
+@mixin svgButton {
+  display: flex;
+  align-items: center;
+  outline: none;
+  border: none;
+  /* border: 1px solid var(--light-dark); */
+  border-radius: 100%;
+  aspect-ratio: 1;
+  background-color: var(--light-back);
+
+  &:hover {
+    background-color: var(--dark-back);
+  }
+  & > svg {
+    min-width: 24px;
+    color: var(--light-dark);
+    width: 100%;
+  }
 }
 
 .url {
@@ -68,7 +88,7 @@
 
   & input:not([type='radio']),
   .final {
-    @mixin arrowInput;
+    @include arrowInput;
   }
 }
 
@@ -84,7 +104,7 @@
     user-select: none;
   }
   & > input {
-    @mixin arrowInput;
+    @include arrowInput;
     font-size: 1.5rem;
   }
 }
@@ -114,7 +134,7 @@ svg {
       outline: none;
       border: none;
       border-radius: 50%;
-      @mixin svgButton;
+      @include svgButton;
     }
   }
   & > .entries {
@@ -125,27 +145,7 @@ svg {
     margin: 1rem;
 
     align-self: center;
-    @mixin svgButton;
-  }
-}
-
-@define-mixin svgButton {
-  display: flex;
-  align-items: center;
-  outline: none;
-  border: none;
-  /* border: 1px solid var(--light-dark); */
-  border-radius: 100%;
-  aspect-ratio: 1;
-  background-color: var(--light-back);
-
-  &:hover {
-    background-color: var(--dark-back);
-  }
-  & > svg {
-    min-width: 24px;
-    color: var(--light-dark);
-    width: 100%;
+    @include svgButton;
   }
 }
 
@@ -165,7 +165,7 @@ svg {
     gap: 0.5rem;
     & > button {
       align-self: center;
-      @mixin svgButton;
+      @include svgButton;
       &:hover {
         cursor: pointer;
       }

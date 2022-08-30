@@ -37,7 +37,7 @@ export function getManifest(): Manifest.WebExtensionManifest {
       48: 'icon-48.png',
       512: 'icon-512.png',
     },
-    permissions: ['tabs', 'storage', 'activeTab', 'http://*/', 'https://*/'],
+    permissions: ['tabs', 'storage', 'activeTab', 'http://*/', 'https://*/', "downloads"],
     commands: {
       search: {
         suggested_key: {

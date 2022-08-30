@@ -1,6 +1,6 @@
 import { type JSXElement, type Component } from 'solid-js';
 
-import styles from './index.module.css';
+import styles from './index.module.scss';
 
 import { BiRegularArrowBack } from 'solid-icons/bi';
 import { AiOutlinePlusCircle } from 'solid-icons/ai';
@@ -32,10 +32,6 @@ const Entries: Component<{ children: JSXElement; add: () => void }> = (
       >
         <AiOutlinePlusCircle size={24} />
       </button>
-      <div>
-        <button>import</button>
-        <button>export</button>
-      </div>
     </div>
   );
 };

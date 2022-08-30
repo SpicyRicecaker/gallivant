@@ -2,19 +2,26 @@ import Entries from './entries';
 import Entry from './entry';
 
 import { searchSchemas, setSearchSchemas } from './schemas';
-import { produce } from 'solid-js/store';
+import { produce, unwrap } from 'solid-js/store';
 
 import { Component, createSignal, Show } from 'solid-js';
 import { For } from 'solid-js';
 
-import styles from './index.module.css';
+import styles from './index.module.scss';
 import { useSchemaPathContext } from './schema-path';
 import { SearchSchema, Url } from 'src/background/store';
+
+import browser from 'webextension-polyfill';
+import type { ContentScriptRequest } from 'src/background/main';
 
 const Options: Component = () => {
   const [schemaPath, setSchemaPath] = useSchemaPathContext();
 
   const [selected, setSelected] = createSignal(-1);
+  
+  const [modified, setModified] = createSignal(false);
+
+  let input: HTMLInputElement;
 
   let y = () => searchSchemas.findIndex((s) => s.name === schemaPath());
 
@@ -33,6 +40,7 @@ const Options: Component = () => {
                   } as SearchSchema);
                 })
               );
+              setModified(true);
             }
           : (): void => {
               setSearchSchemas(
@@ -46,6 +54,7 @@ const Options: Component = () => {
                   } as Url);
                 })
               );
+              setModified(true);
             }
       }
     >
@@ -68,6 +77,7 @@ const Options: Component = () => {
                       }
                     })
                   );
+                  setModified(true);
                 }}
                 moveDown={() => {
                   setSearchSchemas(
@@ -80,6 +90,7 @@ const Options: Component = () => {
                       }
                     })
                   );
+                  setModified(true);
                 }}
                 remove={() => {
                   setSearchSchemas(
@@ -87,6 +98,7 @@ const Options: Component = () => {
                       prev[y()].urls.splice(x(), 1);
                     })
                   );
+                  setModified(true);
                 }}
               >
                 <div class={styles.url}>
@@ -103,6 +115,7 @@ const Options: Component = () => {
                               ).value)
                           )
                         );
+                        setModified(true);
                       }}
                     />
                   </label>
@@ -119,6 +132,7 @@ const Options: Component = () => {
                             ).value)
                         )
                       );
+                      setModified(true);
                     }}
                   />
                   <input
@@ -134,6 +148,7 @@ const Options: Component = () => {
                             ).value)
                         )
                       );
+                      setModified(true);
                     }}
                   />
                   <input
@@ -149,6 +164,7 @@ const Options: Component = () => {
                             ).value)
                         )
                       );
+                      setModified(true);
                     }}
                   />
 
@@ -186,6 +202,7 @@ const Options: Component = () => {
                             }
                           })
                         );
+                        setModified(true);
                       }}
                     />
                   </label>
@@ -210,6 +227,7 @@ const Options: Component = () => {
                     }
                   })
                 );
+                setModified(true);
               }}
               moveDown={() => {
                 setSearchSchemas(
@@ -222,6 +240,7 @@ const Options: Component = () => {
                     }
                   })
                 );
+                setModified(true);
               }}
               remove={() => {
                 setSearchSchemas(
@@ -229,6 +248,7 @@ const Options: Component = () => {
                     prev.splice(y(), 1);
                   })
                 );
+                setModified(true);
               }}
             >
               <div
@@ -255,6 +275,7 @@ const Options: Component = () => {
                         (prev) => (prev[y()].name = (e.target as any).value)
                       )
                     );
+                    setModified(true);
                   }}
                 />
 
@@ -280,6 +301,7 @@ const Options: Component = () => {
                           }
                         })
                       );
+                      setModified(true);
                     }}
                   />
                 </label>
@@ -295,6 +317,7 @@ const Options: Component = () => {
                             !prev[y()].shouldShiftFocus;
                         })
                       );
+                      setModified(true);
                     }}
                   />
                 </label>
@@ -303,6 +326,65 @@ const Options: Component = () => {
           )}
         </For>
       </Show>
+      <div>
+        <button
+          onClick={(e) => {
+            // generate dialog for user to supply their json
+            e.preventDefault();
+            input.click();
+          }}
+        >
+          import
+        </button>
+        <input
+          onChange={async () => {
+            // update the store with our new file.
+            const content = JSON.parse(await input.files![0].text());
+            setSearchSchemas(content);
+            setModified(true);
+          }}
+          ref={input!}
+          style="display: none"
+          type="file"
+          accept="application/json"
+        />
+        <button
+          onClick={() => {
+            // generate json of object
+            const file = new File(
+              [JSON.stringify(searchSchemas)],
+              'schemas.json',
+              {
+                type: 'application/json',
+              }
+            );
+
+            const url = URL.createObjectURL(file);
+
+            browser.downloads.download({
+              url,
+              filename: 'schemas.json',
+              saveAs: true,
+            });
+          }}
+        >
+          export
+        </button>
+        <Show when={modified()}>
+          <button
+            onClick={async () => {
+              // send the current search schemas to the browser
+              await browser.runtime.sendMessage({
+                variant: 'setSearchSchemas',
+                searchSchemas: unwrap(searchSchemas),
+              } as ContentScriptRequest);
+              setModified(false);
+            }}
+          >
+            save modified
+          </button>
+        </Show>
+      </div>
     </Entries>
   );
 };

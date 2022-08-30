@@ -1,6 +1,6 @@
 import { produce } from 'solid-js/store';
 import browser from 'webextension-polyfill';
-import { searchSchemas, setSearchSchemas } from './store';
+import { SearchSchema, searchSchemas, setSearchSchemas } from './store';
 
 browser.runtime.onInstalled.addListener(() => {
   console.log('Extension installed');
@@ -22,6 +22,9 @@ export type ContentScriptRequest = {
   idx: number
 } | {
   variant: "getSearchSchemas",
+} | {
+  variant: "setSearchSchemas",
+  searchSchemas: SearchSchema[]
 };
 
 const searchBarSrc = browser.runtime.getURL("src/search/index.html");
@@ -106,6 +109,11 @@ browser.runtime.onMessage.addListener(async (message: ContentScriptRequest) => {
           }
         }
       }))
+      break;
+    }
+    case "setSearchSchemas": {
+      setSearchSchemas(message.searchSchemas);
+      break;
     }
     default: {
       break;

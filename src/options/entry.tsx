@@ -1,7 +1,7 @@
 import { type Component } from 'solid-js';
 import { type JSX } from 'solid-js';
 
-import styles from './index.module.css';
+import styles from './index.module.scss';
 
 import { TiDelete } from 'solid-icons/ti';
 import { BiRegularArrowFromBottom } from 'solid-icons/bi';
