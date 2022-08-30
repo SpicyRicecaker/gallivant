@@ -1,51 +1,34 @@
-# SolidJS Webextension Starter
+# Gallivant
 
-Simple Webextension Starter-Kit with Vite HMR and SolidJS
+A simple browser search toolbar that allows you to organize your search engines into groups and quickly access them.
 
-Based on [@samrum/vite-plugin-web-extension](https://github.com/samrum/vite-plugin-web-extension)
+![picture of gallivant](./screenshot.png)
 
-## Features
+## Building 
 
-- Instant Vite HMR
-- Typescript - type safe `manifest.json`
-- Vitest
-- ESLint
-- Github Actions
+### MacOS/Linux
 
-## Getting Started
+Gallivant is developed using [bun](https://bun.sh/), a new javascript runtime. Make sure it's installed, then run
 
-Make sure you have [Nodejs](https://nodejs.org/en/)
-and [pnpm](https://pnpm.js.org/) installed.
+```shell
+bun i # to install dependencies
+bun bun:product # to create the extension's zip
+```
 
-### Install Dependencies
+### Windows
 
-```sh
+On windows, `bun` currently isn't supported, so make sure to install [Nodejs](https://nodejs.org/en/)
+and [pnpm](https://pnpm.js.org/) instead.
+
+```shell
 pnpm i
+pnpm pnpm:product
 ```
 
 ## Development
 
-Run the commands in separate terminals.
-
-### Chrome
-
-```sh
-pnpm run dev
-```
-
-```sh
-pnpm run serve:chrome
-```
-
-### Firefox
-
-> Unfortunately does not support loading content scripts from localhost
-> so you need to use `vite build --watch` for now.
-
-```sh
-pnpm run watch
-```
-
-```sh
-pnpm run serve:firefox
+```shell
+bun i
+bun run watch
+bun run serve:firefox
 ```

@@ -14,7 +14,8 @@
     "lint": "eslint .",
     "webext:lint": "web-ext lint -s ./dist",
     "dist": "web-ext build --source-dir=./dist --overwrite-dest",
-    "product": "bun make && bun dist"
+    "bun:product": "bun make && bun dist",
+    "pnpm:product": "pnpm make && pnpm dist"
   },
   "license": "MIT",
   "devDependencies": {
