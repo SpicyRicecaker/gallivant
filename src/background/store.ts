@@ -13,6 +13,8 @@ export interface SearchSchema {
   name: string,
   urls: Url[],
   active: boolean,
+  // whether or not to clear searchbar after focusout
+  clear: boolean,
   // whether or not to shift focus to a specific tab
   shouldShiftFocus: boolean
 }
@@ -70,6 +72,7 @@ export const initSearchSchemas = (): SearchSchema[] => {
           active: false,
         }
       ],
+      clear: false,
       active: true,
       shouldShiftFocus: true
     },
@@ -120,6 +123,7 @@ export const initSearchSchemas = (): SearchSchema[] => {
         },
       ],
       active: false,
+      clear: false,
       shouldShiftFocus: true
     }
   ];

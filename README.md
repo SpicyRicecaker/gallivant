@@ -2,6 +2,11 @@
 
 A simple browser search toolbar that allows you to organize your search engines into groups and quickly access them.
 
+## Keybindings
+
+`ctrl+j/k` to change engines
+`ctrl+alt+g` or `ctrl+g` to toggle the search bar
+
 ![picture of gallivant](./screenshot.png)
 
 ## Building 

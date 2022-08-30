@@ -18,7 +18,7 @@ const Options: Component = () => {
   const [schemaPath, setSchemaPath] = useSchemaPathContext();
 
   const [selected, setSelected] = createSignal(-1);
-  
+
   const [modified, setModified] = createSignal(false);
 
   let input: HTMLInputElement;
@@ -36,6 +36,7 @@ const Options: Component = () => {
                     name: '',
                     urls: [],
                     active: false,
+                    clear: false,
                     shouldShiftFocus: true,
                   } as SearchSchema);
                 })
@@ -50,7 +51,7 @@ const Options: Component = () => {
                     before: '',
                     after: '',
                     replaceSpaceWith: ' ',
-                    active: false,
+                    active: prev[y()].urls.length === 0 ? true : false,
                   } as Url);
                 })
               );
@@ -181,6 +182,7 @@ const Options: Component = () => {
                     </span>
                   </div>
                   <label>
+                    switch to this tab
                     <input
                       type="radio"
                       name={`${searchSchemas[y()].name}-active`}
@@ -315,6 +317,22 @@ const Options: Component = () => {
                         produce((prev) => {
                           prev[y()].shouldShiftFocus =
                             !prev[y()].shouldShiftFocus;
+                        })
+                      );
+                      setModified(true);
+                    }}
+                  />
+                </label>
+                <label onClick={(e) => e.stopPropagation()}>
+                  should clear search bar after focus out
+                  <input
+                    type="checkbox"
+                    checked={searchSchema.clear}
+                    onInput={(_) => {
+                      setSearchSchemas(
+                        produce((prev) => {
+                          prev[y()].clear =
+                            !prev[y()].clear;
                         })
                       );
                       setModified(true);

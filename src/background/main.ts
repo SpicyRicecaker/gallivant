@@ -97,7 +97,7 @@ browser.runtime.onMessage.addListener(async (message: ContentScriptRequest) => {
       return Promise.resolve({ response: JSON.stringify(searchSchemas) })
     }
     case "getSearchSchemaNames": {
-      return Promise.resolve({ response: searchSchemas.map((s) => { return { name: s.name, active: s.active } }) });
+      return Promise.resolve({ response: searchSchemas.map((s) => { return { name: s.name, active: s.active, clear: s.clear } }) });
     }
     case "setActive": {
       setSearchSchemas(produce((prev) => {

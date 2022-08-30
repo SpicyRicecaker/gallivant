@@ -1,0 +1,11 @@
+-  The settings editor
+  - [x] When creating a new engine, it's default tab should be selected
+    - [x] There should be a label next to focus tab radio
+  - [ ] Upon receiving a change schema request, all existing tabs should be closed, as well as search schemas despawned 
+  - [ ] Style the buttons
+  - [ ] [Feature] Create mobile-first design
+- [ ] fix 1px whitespace underneath toolbar
+- [x] Add option for each search engine to clear input on focus out
+  - [ ] Wait, it's currently bound to clear text on `Enter, so `ctrl+g` won't work, is this good or bad? 
+- [ ] Add an option to temporarily disable a search engine (so that `ctrl+j` and `ctrl+k` can be easily used)
+  - Add a json editor?

@@ -3,7 +3,7 @@ import browser from 'webextension-polyfill';
 import { produce } from 'solid-js/store';
 import { type ContentScriptRequest } from 'src/background/main';
 
-type SearchTitles = { name: string; active: boolean };
+type SearchTitles = { name: string; active: boolean, clear: boolean };
 
 const getSearchSchemaNames = async (): Promise<SearchTitles[]> => {
   const res: { response: SearchTitles[] } = await browser.runtime.sendMessage({
@@ -16,7 +16,7 @@ export const Search = () => {
   let value = '';
   let bar: HTMLInputElement;
 
-  const [searchSchemas, { mutate, refetch }] = createResource(getSearchSchemaNames);
+  const [searchSchemas, { mutate }] = createResource(getSearchSchemaNames);
 
   const [active, setActive] = createSignal('');
 
@@ -46,6 +46,11 @@ export const Search = () => {
         browser.runtime.sendMessage({
           variant: 'toggleSearch',
         } as ContentScriptRequest);
+
+        if (searchSchemas() && searchSchemas()!.find((s) => s.name === active())?.clear) {
+          bar.value = "";
+        };
+
         break;
       }
       // TODO currently bugged with IMES, where 1) closing the search causes the
