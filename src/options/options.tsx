@@ -1,29 +1,28 @@
-import Entries from './entries';
-import Entry from './entry';
+import Entries from './entries'
+import Entry from './entry'
 
-import { searchSchemas, setSearchSchemas } from './schemas';
-import { produce, unwrap } from 'solid-js/store';
+import { searchSchemas, setSearchSchemas } from './schemas'
+import { produce, unwrap } from 'solid-js/store'
 
-import { Component, createSignal, Show } from 'solid-js';
-import { For } from 'solid-js';
+import { Component, createSignal, Show, For } from 'solid-js'
 
-import styles from './index.module.scss';
-import { useSchemaPathContext } from './schema-path';
-import { SearchSchema, Url } from 'src/background/store';
+import styles from './index.module.scss'
+import { useSchemaPathContext } from './schema-path'
+import { SearchSchema, Url } from 'src/background/store'
 
-import browser from 'webextension-polyfill';
-import type { ContentScriptRequest } from 'src/background/main';
+import browser from 'webextension-polyfill'
+import type { ContentScriptRequest } from 'src/background/main'
 
 const Options: Component = () => {
-  const [schemaPath, setSchemaPath] = useSchemaPathContext();
+  const [schemaPath, setSchemaPath] = useSchemaPathContext()
 
-  const [selected, setSelected] = createSignal(-1);
+  const [selected, setSelected] = createSignal(-1)
 
-  const [modified, setModified] = createSignal(false);
+  const [modified, setModified] = createSignal(false)
 
-  let input: HTMLInputElement;
+  let input: HTMLInputElement
 
-  let y = () => searchSchemas.findIndex((s) => s.name === schemaPath());
+  const y = () => searchSchemas.findIndex((s) => s.name === schemaPath())
 
   return (
     <Entries
@@ -37,11 +36,11 @@ const Options: Component = () => {
                     urls: [],
                     active: false,
                     clear: false,
-                    shouldShiftFocus: true,
-                  } as SearchSchema);
+                    shouldShiftFocus: true
+                  })
                 })
-              );
-              setModified(true);
+              )
+              setModified(true)
             }
           : (): void => {
               setSearchSchemas(
@@ -51,11 +50,11 @@ const Options: Component = () => {
                     before: '',
                     after: '',
                     replaceSpaceWith: ' ',
-                    active: prev[y()].urls.length === 0 ? true : false,
-                  } as Url);
+                    active: prev[y()].urls.length === 0
+                  })
                 })
-              );
-              setModified(true);
+              )
+              setModified(true)
             }
       }
     >
@@ -70,36 +69,36 @@ const Options: Component = () => {
                 moveUp={() => {
                   setSearchSchemas(
                     produce((prev) => {
-                      const prevIdx = x() - 1;
+                      const prevIdx = x() - 1
                       if (prevIdx >= 0) {
-                        const temp = prev[y()].urls[prevIdx];
-                        prev[y()].urls[prevIdx] = prev[y()].urls[x()];
-                        prev[y()].urls[x()] = temp;
+                        const temp = prev[y()].urls[prevIdx]
+                        prev[y()].urls[prevIdx] = prev[y()].urls[x()]
+                        prev[y()].urls[x()] = temp
                       }
                     })
-                  );
-                  setModified(true);
+                  )
+                  setModified(true)
                 }}
                 moveDown={() => {
                   setSearchSchemas(
                     produce((prev) => {
-                      const prevIdx = x() + 1;
+                      const prevIdx = x() + 1
                       if (prevIdx < 8) {
-                        const temp = prev[y()].urls[prevIdx];
-                        prev[y()].urls[prevIdx] = prev[y()].urls[x()];
-                        prev[y()].urls[x()] = temp;
+                        const temp = prev[y()].urls[prevIdx]
+                        prev[y()].urls[prevIdx] = prev[y()].urls[x()]
+                        prev[y()].urls[x()] = temp
                       }
                     })
-                  );
-                  setModified(true);
+                  )
+                  setModified(true)
                 }}
                 remove={() => {
                   setSearchSchemas(
                     produce((prev) => {
-                      prev[y()].urls.splice(x(), 1);
+                      prev[y()].urls.splice(x(), 1)
                     })
-                  );
-                  setModified(true);
+                  )
+                  setModified(true)
                 }}
               >
                 <div class={styles.url}>
@@ -115,8 +114,8 @@ const Options: Component = () => {
                                 e.target as any
                               ).value)
                           )
-                        );
-                        setModified(true);
+                        )
+                        setModified(true)
                       }}
                     />
                   </label>
@@ -132,8 +131,8 @@ const Options: Component = () => {
                               e.target as any
                             ).value)
                         )
-                      );
-                      setModified(true);
+                      )
+                      setModified(true)
                     }}
                   />
                   <input
@@ -148,8 +147,8 @@ const Options: Component = () => {
                               e.target as any
                             ).value)
                         )
-                      );
-                      setModified(true);
+                      )
+                      setModified(true)
                     }}
                   />
                   <input
@@ -164,8 +163,8 @@ const Options: Component = () => {
                               e.target as any
                             ).value)
                         )
-                      );
-                      setModified(true);
+                      )
+                      setModified(true)
                     }}
                   />
 
@@ -197,14 +196,14 @@ const Options: Component = () => {
                           produce((prev) => {
                             for (let i = 0; i < prev[y()].urls.length; i++) {
                               if (i === x()) {
-                                prev[y()].urls[x()].active = true;
+                                prev[y()].urls[x()].active = true
                               } else {
-                                prev[y()].urls[x()].active = false;
+                                prev[y()].urls[x()].active = false
                               }
                             }
                           })
-                        );
-                        setModified(true);
+                        )
+                        setModified(true)
                       }}
                     />
                   </label>
@@ -214,52 +213,52 @@ const Options: Component = () => {
           </For>
         }
       >
-        {/* by default, show the folders of the schemas*/}
+        {/* by default, show the folders of the schemas */}
         <For each={searchSchemas}>
           {(searchSchema, y) => (
             <Entry
               moveUp={() => {
                 setSearchSchemas(
                   produce((prev) => {
-                    const prevIdx = y() - 1;
+                    const prevIdx = y() - 1
                     if (prevIdx >= 0) {
-                      const temp = prev[prevIdx];
-                      prev[prevIdx] = prev[y()];
-                      prev[y()] = temp;
+                      const temp = prev[prevIdx]
+                      prev[prevIdx] = prev[y()]
+                      prev[y()] = temp
                     }
                   })
-                );
-                setModified(true);
+                )
+                setModified(true)
               }}
               moveDown={() => {
                 setSearchSchemas(
                   produce((prev) => {
-                    const prevIdx = y() + 1;
+                    const prevIdx = y() + 1
                     if (prevIdx < searchSchemas.length) {
-                      const temp = prev[prevIdx];
-                      prev[prevIdx] = prev[y()];
-                      prev[y()] = temp;
+                      const temp = prev[prevIdx]
+                      prev[prevIdx] = prev[y()]
+                      prev[y()] = temp
                     }
                   })
-                );
-                setModified(true);
+                )
+                setModified(true)
               }}
               remove={() => {
                 setSearchSchemas(
                   produce((prev) => {
-                    prev.splice(y(), 1);
+                    prev.splice(y(), 1)
                   })
-                );
-                setModified(true);
+                )
+                setModified(true)
               }}
             >
               <div
                 onClick={(_) => {
                   if (selected() === y()) {
-                    setSchemaPath(searchSchema.name);
-                    setSelected(-1);
+                    setSchemaPath(searchSchema.name)
+                    setSelected(-1)
                   } else {
-                    setSelected(y());
+                    setSelected(y())
                   }
                 }}
                 class={`${styles.schema} ${
@@ -276,12 +275,12 @@ const Options: Component = () => {
                       produce(
                         (prev) => (prev[y()].name = (e.target as any).value)
                       )
-                    );
-                    setModified(true);
+                    )
+                    setModified(true)
                   }}
                 />
 
-                <hr></hr>
+                <hr />
                 <label onClick={(e) => e.stopPropagation()}>
                   is active searcher
                   <input
@@ -294,16 +293,16 @@ const Options: Component = () => {
                           // for some reason, (probably because clicking label causes two click events to be sent, sometimes there's a bug where it double toggles, leaving none. This is BAD, so we're putting a guard here)
                           if (!prev[y()].active) {
                             for (let i = 0; i < prev.length; i++) {
-                              if (i == y()) {
-                                prev[y()].active = true;
+                              if (i === y()) {
+                                prev[y()].active = true
                               } else {
-                                prev[y()].active = false;
+                                prev[y()].active = false
                               }
                             }
                           }
                         })
-                      );
-                      setModified(true);
+                      )
+                      setModified(true)
                     }}
                   />
                 </label>
@@ -316,10 +315,10 @@ const Options: Component = () => {
                       setSearchSchemas(
                         produce((prev) => {
                           prev[y()].shouldShiftFocus =
-                            !prev[y()].shouldShiftFocus;
+                            !prev[y()].shouldShiftFocus
                         })
-                      );
-                      setModified(true);
+                      )
+                      setModified(true)
                     }}
                   />
                 </label>
@@ -332,10 +331,10 @@ const Options: Component = () => {
                       setSearchSchemas(
                         produce((prev) => {
                           prev[y()].clear =
-                            !prev[y()].clear;
+                            !prev[y()].clear
                         })
-                      );
-                      setModified(true);
+                      )
+                      setModified(true)
                     }}
                   />
                 </label>
@@ -348,8 +347,8 @@ const Options: Component = () => {
         <button
           onClick={(e) => {
             // generate dialog for user to supply their json
-            e.preventDefault();
-            input.click();
+            e.preventDefault()
+            input.click()
           }}
         >
           import
@@ -357,12 +356,12 @@ const Options: Component = () => {
         <input
           onChange={async () => {
             // update the store with our new file.
-            const content = JSON.parse(await input.files![0].text());
-            setSearchSchemas(content);
-            setModified(true);
+            const content = JSON.parse(await input.files![0].text())
+            setSearchSchemas(content)
+            setModified(true)
           }}
           ref={input!}
-          style="display: none"
+          style={{ display: 'none' }}
           type="file"
           accept="application/json"
         />
@@ -373,17 +372,17 @@ const Options: Component = () => {
               [JSON.stringify(searchSchemas)],
               'schemas.json',
               {
-                type: 'application/json',
+                type: 'application/json'
               }
-            );
+            )
 
-            const url = URL.createObjectURL(file);
+            const url = URL.createObjectURL(file)
 
             browser.downloads.download({
               url,
               filename: 'schemas.json',
-              saveAs: true,
-            });
+              saveAs: true
+            })
           }}
         >
           export
@@ -394,9 +393,9 @@ const Options: Component = () => {
               // send the current search schemas to the browser
               await browser.runtime.sendMessage({
                 variant: 'setSearchSchemas',
-                searchSchemas: unwrap(searchSchemas),
-              } as ContentScriptRequest);
-              setModified(false);
+                searchSchemas: unwrap(searchSchemas)
+              } as ContentScriptRequest)
+              setModified(false)
             }}
           >
             save modified
@@ -404,7 +403,7 @@ const Options: Component = () => {
         </Show>
       </div>
     </Entries>
-  );
-};
+  )
+}
 
-export default Options;
+export default Options

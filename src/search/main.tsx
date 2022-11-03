@@ -1,11 +1,11 @@
-import { render } from 'solid-js/web';
-import { Search }  from './search';
+import { render } from 'solid-js/web'
+import { Search } from './search'
 
-import './index.css';
+import './index.css'
 
-const element = document.getElementById('app');
-if (!element) {
-  throw new Error('No app element found');
+const element = document.getElementById('app')
+if (element == null) {
+  throw new Error('No app element found')
 }
 
-render(() => <Search />, element);
+render(() => <Search />, element)

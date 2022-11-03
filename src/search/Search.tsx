@@ -2,18 +2,24 @@ import { createEffect, createResource, createSignal, onMount } from 'solid-js'
 import browser from 'webextension-polyfill'
 import { produce } from 'solid-js/store'
 import { type ContentScriptRequest } from 'src/background/main'
+import { Monad } from 'src/lib'
+import { browserRuntimeSendMessage } from 'src/lib2'
 
-type SearchTitles = { name: string; active: boolean; clear: boolean }
+interface SearchTitles {
+  name: string
+  active: boolean
+  clear: boolean
+}
 
 const getSearchSchemaNames = async (): Promise<SearchTitles[]> => {
-  const res: { response: SearchTitles[] } = await browser.runtime.sendMessage({
-    variant: 'getSearchSchemaNames',
-  } as ContentScriptRequest)
+  const req: ContentScriptRequest = { variant: 'getSearchSchemaNames' }
+  const res: { response: SearchTitles[] } = await browser.runtime.sendMessage(
+    req
+  )
   return res.response
 }
 
 export const Search = () => {
-  let value = ''
   let bar: HTMLInputElement
 
   const [searchSchemas, { mutate }] = createResource(getSearchSchemaNames)
@@ -21,17 +27,16 @@ export const Search = () => {
   const [active, setActive] = createSignal('')
 
   createEffect(() => {
-    const ss = searchSchemas()
-    if (ss) {
-      setActive(ss.find((s) => s.active)!.name)
-    }
+    Monad.unit(searchSchemas())
+      .map((s) => s.find((s) => s.active))
+      .each((t) => setActive(t.name))
   })
 
   onMount(() => {
-    bar!.focus()
+    bar.focus()
   })
 
-  const processKey = (e: KeyboardEvent): void => {
+  const processKey = async (e: KeyboardEvent): Promise<void> => {
     switch (e.code) {
       case 'Enter': {
         // in some cases it is beneficial for the user to make temporary searches
@@ -40,30 +45,32 @@ export const Search = () => {
         // these should not be tracked, instead,
         // when one tab is deleted, the entire stack should be disposed
         if (e.ctrlKey) {
-          browser.runtime.sendMessage({
+          await browserRuntimeSendMessage({
             variant: 'lookupTermTemporary',
-            query: bar.value,
-          } as ContentScriptRequest)
+            query: bar.value
+          })
         }
         // try searching!
         // this is actually very easy to do.
         // So we basically make an option page that binds to local storage, and whenever we init search below we load the search engines from local storage. It's pissfree!!!!!!
         // Actually, we'll have to load localstorage from
-        browser.runtime.sendMessage({
+        await browserRuntimeSendMessage({
           variant: 'lookupTerm',
-          query: bar.value,
-        } as ContentScriptRequest)
+          query: bar.value
+        })
 
-        browser.runtime.sendMessage({
-          variant: 'toggleSearch',
-        } as ContentScriptRequest)
+        await browserRuntimeSendMessage({
+          variant: 'toggleSearch'
+        })
 
-        if (
-          searchSchemas() &&
-          searchSchemas()!.find((s) => s.name === active())?.clear
-        ) {
-          bar.value = ''
-        }
+        Monad.unit(searchSchemas())
+          .map((s) => Monad.unit(s.find((s) => s.name === active())))
+          .map((s) => Monad.unit(s.clear))
+          .each((clear) => {
+            if (clear) {
+              bar.value = ''
+            }
+          })
 
         break
       }
@@ -75,63 +82,65 @@ export const Search = () => {
       case 'KeyG': {
         if (e.ctrlKey) {
           e.preventDefault()
-          browser.runtime.sendMessage({
-            variant: 'toggleSearch',
-          } as ContentScriptRequest)
+          await browserRuntimeSendMessage({
+            variant: 'toggleSearch'
+          })
         }
         break
       }
       case 'KeyK': {
         if (e.ctrlKey) {
           e.preventDefault()
-          const ss = searchSchemas()
-          if (!ss) {
-            return
-          }
-          const i = ss.findIndex((s) => s.active)!
-          mutate(
-            produce((old) => {
-              old![i].active = false
-              const inew = (i - 1 + ss.length) % ss.length
-              old![inew].active = true
-              setActive(old![inew].name)
-              browser.runtime.sendMessage({
-                variant: 'setActive',
-                idx: inew,
-              } as ContentScriptRequest)
+          Monad.unit(searchSchemas()).each((ss) => {
+            Monad.unit(ss.findIndex((s) => s.active)).each((i) => {
+              mutate(
+                produce((old) => {
+                  Monad.unit(old).each((old) => {
+                    old[i].active = false
+                    const inew = (i - 1 + ss.length) % ss.length
+                    old[inew].active = true
+                    setActive(old[inew].name)
+                    browserRuntimeSendMessage({
+                      variant: 'setActive',
+                      idx: inew
+                    }).catch((e) => console.error(e))
+                  })
+                })
+              )
             })
-          )
+          })
         }
         break
       }
       case 'KeyJ': {
         if (e.ctrlKey) {
           e.preventDefault()
-          const ss = searchSchemas()
-          if (!ss) {
-            return
-          }
-          const i = ss.findIndex((s) => s.active)!
-          mutate(
-            produce((old) => {
-              old![i].active = false
-              const inew = (i + 1) % ss.length
-              old![inew].active = true
-              setActive(old![inew].name)
-              browser.runtime.sendMessage({
-                variant: 'setActive',
-                idx: inew,
-              } as ContentScriptRequest)
+          Monad.unit(searchSchemas()).each((ss) => {
+            Monad.unit(ss.findIndex((s) => s.active)).each((i) => {
+              mutate(
+                produce((old) => {
+                  Monad.unit(old).each((old) => {
+                    old[i].active = false
+                    const inew = ((i + 1) % ss.length) % ss.length
+                    old[inew].active = true
+                    setActive(old[inew].name)
+                    browserRuntimeSendMessage({
+                      variant: 'setActive',
+                      idx: inew
+                    }).catch((e) => console.error(e))
+                  })
+                })
+              )
             })
-          )
+          })
         }
         break
       }
       case 'Escape': {
         e.preventDefault()
-        browser.runtime.sendMessage({
-          variant: 'toggleSearch',
-        } as ContentScriptRequest)
+        await browserRuntimeSendMessage({
+          variant: 'toggleSearch'
+        })
         break
       }
       default: {
@@ -144,7 +153,9 @@ export const Search = () => {
     <>
       <input
         ref={bar!}
-        onKeyDown={processKey}
+        onKeyDown={(e) => {
+          processKey(e).catch((e) => console.error(e))
+        }}
         onInput={(e: InputEvent) => {
           value = (e.target as any).value
         }}

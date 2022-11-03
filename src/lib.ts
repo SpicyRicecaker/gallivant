@@ -8,27 +8,34 @@ class Some<T> {
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class, @typescript-eslint/no-unused-vars
 class None<T> {}
 
-class Option<T> {
+export class Option<T> {
   value: Some<T> | None<T>
   constructor(value: Some<T> | None<T>) {
     this.value = value
   }
 
-  map<U>(f: (value: T) => Option<U>): Option<U> {
+  bind<U>(f: (value: T) => Option<NonNullable<U>>): Option<NonNullable<U>> {
     if (this.value === none) {
       return none
     }
     return f((this.value as Some<T>).value)
   }
 
-  eachSync(f: (value: T) => void): void {
+  map<U>(f: (value: T) => U): Option<NonNullable<U>> {
+    if (this.value === none) {
+      return none
+    }
+    return Monad.unit(f((this.value as Some<T>).value))
+  }
+
+  each(f: (value: T) => void): void {
     if (this.value === none) {
       return
     }
     f((this.value as Some<T>).value)
   }
 
-  async each(f: (value: T) => Promise<void>): Promise<void> {
+  async eachP(f: (value: T) => Promise<void>): Promise<void> {
     if (this.value === none) {
       return
     }
@@ -49,9 +56,9 @@ export class Monad {
     return none
   }
 
-  static tryInto<T>(v: T): Option<T> {
+  static unit<T>(v: T): Option<NonNullable<T>> {
     if (v !== undefined && v !== null) {
-      return this.some(v)
+      return this.some(v as NonNullable<T>)
     } else {
       return none
     }

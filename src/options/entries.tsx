@@ -1,17 +1,17 @@
-import { type JSXElement, type Component } from 'solid-js';
+import { type JSXElement, type Component } from 'solid-js'
 
-import styles from './index.module.scss';
+import styles from './index.module.scss'
 
-import { BiRegularArrowBack } from 'solid-icons/bi';
-import { AiOutlinePlusCircle } from 'solid-icons/ai';
+import { BiRegularArrowBack } from 'solid-icons/bi'
+import { AiOutlinePlusCircle } from 'solid-icons/ai'
 
-import { useSchemaPathContext } from './schema-path';
+import { useSchemaPathContext } from './schema-path'
 
 // Represents a search schema. When clicked, reveals all urls in it.
-const Entries: Component<{ children: JSXElement; add: () => void }> = (
+const Entries: Component<{ children: JSXElement, add: () => void }> = (
   props
 ) => {
-  const [schemaPath, setSchemaPath] = useSchemaPathContext();
+  const [schemaPath, setSchemaPath] = useSchemaPathContext()
 
   return (
     <div class={styles.entriesPage}>
@@ -27,13 +27,13 @@ const Entries: Component<{ children: JSXElement; add: () => void }> = (
       <div class={styles.entries}>{props.children}</div>
       <button
         onClick={() => {
-          props.add();
+          props.add()
         }}
       >
         <AiOutlinePlusCircle size={24} />
       </button>
     </div>
-  );
-};
+  )
+}
 
-export default Entries;
+export default Entries
