@@ -143,3 +143,5 @@ dist
 *.vsix
 
 /web-ext-artifacts
+
+.DS_Store

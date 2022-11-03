@@ -1,16 +1,23 @@
-/** @type {import('eslint').Linter.Config} */
 module.exports = {
-  root: true,
-  parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'solid'],
+  env: {
+    browser: true,
+    es2021: true
+  },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'prettier',
-    'plugin:solid/typescript',
+    'standard-with-typescript',
+    'plugin:solid/typescript'
   ],
-  env: {
-    node: true,
-    browser: true,
+  overrides: [
+  ],
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    project: 'tsconfig.json'
   },
-};
+  rules: {
+    "@typescript-eslint/indent": "off",
+    "@typescript-eslint/space-before-function-paren": "off"
+  }
+}
