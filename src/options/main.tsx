@@ -1,16 +1,16 @@
-import { render } from 'solid-js/web'
+import { render } from 'solid-js/web';
 
-import './index.css'
+import './index.css';
 
-import { SchemaPath } from './schema-path'
+import { SchemaPath } from './schema-path';
 
-import Options from './options'
+const element = document.getElementById('app');
 
-const element = document.getElementById('app')
-
-if (element == null) {
-  throw new Error('No app element found')
+if (!element) {
+  throw new Error('No app element found');
 }
+
+import Options from './options';
 
 render(
   () => (
@@ -19,4 +19,4 @@ render(
     </SchemaPath>
   ),
   element
-)
+);

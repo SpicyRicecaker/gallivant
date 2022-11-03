@@ -1,15 +1,17 @@
-import { type Component, type JSX } from 'solid-js'
+import { type Component } from 'solid-js';
+import { type JSX } from 'solid-js';
 
-import styles from './index.module.scss'
+import styles from './index.module.scss';
 
-import { TiDelete } from 'solid-icons/ti'
-import { BiRegularArrowFromBottom, BiRegularArrowFromTop } from 'solid-icons/bi'
+import { TiDelete } from 'solid-icons/ti';
+import { BiRegularArrowFromBottom } from 'solid-icons/bi';
+import { BiRegularArrowFromTop } from 'solid-icons/bi';
 
 const Entry: Component<{
-  children: JSX.Element
-  remove: () => void
-  moveUp: () => void
-  moveDown: () => void
+  children: JSX.Element;
+  remove: () => void;
+  moveUp: () => void;
+  moveDown: () => void;
 }> = (props) => {
   // should include elements to delete the element, as well as editing the element
   return (
@@ -28,7 +30,7 @@ const Entry: Component<{
       {/* should either be a folder or a url, allowing either clicks or input */}
       <div class={styles.entryContent}>{props.children}</div>
     </div>
-  )
-}
+  );
+};
 
-export default Entry
+export default Entry;

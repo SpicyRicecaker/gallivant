@@ -1,12 +1,12 @@
-import { Manifest } from 'webextension-polyfill'
-import type PkgType from '../package.json'
-import { resolve } from 'node:path'
-import fs from 'fs-extra'
+import { Manifest } from 'webextension-polyfill';
+import type PkgType from '../package.json';
+import { resolve } from 'node:path';
+import fs from 'fs-extra';
 
 export function getManifest(): Manifest.WebExtensionManifest {
   const pkg = fs.readJSONSync(
     resolve(__dirname, '..', 'package.json')
-  ) as typeof PkgType
+  ) as typeof PkgType;
 
   return {
     manifest_version: 2,
@@ -15,41 +15,41 @@ export function getManifest(): Manifest.WebExtensionManifest {
     description: pkg.description,
     background: {
       scripts: ['src/background/script.ts'],
-      persistent: false
+      persistent: false,
     },
     content_scripts: [
       {
         js: ['src/contentScript/main.ts'],
-        matches: ['http://*/*', 'https://*/*']
-      }
+        matches: ['http://*/*', 'https://*/*'],
+      },
     ],
     browser_action: {
       // default_popup: 'src/popup/index.html',
-      default_icon: 'icon-512.png'
+      default_icon: 'icon-512.png',
     },
     options_ui: {
       page: 'src/options/index.html',
       chrome_style: false,
-      open_in_tab: true
+      open_in_tab: true,
     },
     icons: {
       16: 'icon-16.png',
       48: 'icon-48.png',
-      512: 'icon-512.png'
+      512: 'icon-512.png',
     },
-    permissions: ['tabs', 'storage', 'activeTab', 'http://*/', 'https://*/', 'downloads'],
+    permissions: ['tabs', 'storage', 'activeTab', 'http://*/', 'https://*/', "downloads"],
     commands: {
       search: {
         suggested_key: {
-          default: 'Ctrl+Alt+G',
-          mac: 'MacCtrl+G',
-          windows: 'Ctrl+Alt+G'
+          default: "Ctrl+Alt+G",
+          mac: "MacCtrl+G",
+          windows: "Ctrl+Alt+G",
         },
-        description: 'Search existing websites'
-      }
+        description: "Search existing websites"
+      },
     },
     web_accessible_resources: [
       'src/search/index.html'
     ]
-  }
+  };
 }

@@ -9,7 +9,7 @@ browser.runtime.onInstalled.addListener(() => {
 
 export interface BackgroundRequest {
   variant: 'toggleSearch'
-  searchBarSrc?: string
+  searchBarSrc: string
 }
 export type ContentScriptRequest =
   | {
@@ -45,13 +45,11 @@ browser.commands.onCommand.addListener(async (command) => {
   switch (command) {
     case 'search': {
       // create overlay on the current webpage
-      await Monad.unit(
-        (
-          await browser.tabs.query({ active: true, currentWindow: true })
-        )[0]
+      Monad.tryInto(
+        (await browser.tabs.query({ active: true, currentWindow: true }))[0]
       )
-        .map((tab) => tab.id)
-        .eachP(async (value) => {
+        .map((tab) => Monad.tryInto(tab.id!))
+        .each(async (value) => {
           const toggleSearchRequest: BackgroundRequest = {
             variant: 'toggleSearch',
             searchBarSrc
@@ -80,19 +78,15 @@ browser.runtime.onMessage.addListener(async (message: ContentScriptRequest) => {
       const currentTab = (
         await browser.tabs.query({ active: true, currentWindow: true })
       )[0]
-      if (currentTab.id !== undefined) {
-        const t: BackgroundRequest = { variant: 'toggleSearch' }
-        await browser.tabs.sendMessage(currentTab.id, t)
-      }
+      browser.tabs.sendMessage(currentTab.id!, {
+        variant: 'toggleSearch'
+      } as BackgroundRequest)
       break
     }
     // opens url in new tab
     case 'lookupTerm': {
       // get selected search schema
-      const selectedSchema = searchSchemas.find((s) => s.active)
-      if (selectedSchema === undefined) {
-        return
-      }
+      const selectedSchema = searchSchemas.find((s) => s.active)!
       const urls = selectedSchema.urls
 
       // iterate over all urls
@@ -110,31 +104,25 @@ browser.runtime.onMessage.addListener(async (message: ContentScriptRequest) => {
         // attempt to update existing tabs
         // KEY: we concatenate the name of the schema here so that identical links will belong to different schemas
         const tabId = urlToId.get(`${selectedSchema.name}${urls[i].base}`)
-        if (tabId !== undefined) {
+        if (tabId) {
           try {
             const tab = await browser.tabs.get(tabId)
             // if tab exists, simply update it with the new query
-            await browser.tabs.update(tab.id, tabInfo)
+            await browser.tabs.update(tab.id!, tabInfo)
             continue
           } catch (e) {
             // tab has been removed or whatever, this is fine and expected behavior
           }
-        } else {
-          // otherwise, create new tab and insert the thing into the map
-          const newTabId = (await browser.tabs.create(tabInfo)).id
-          if (newTabId === undefined) {
-            return
-          }
-          urlToId.set(`${selectedSchema.name}${urls[i].base}`, newTabId)
         }
+
+        // otherwise, create new tab and insert the thing into the map
+        const newTabId = (await browser.tabs.create(tabInfo)).id!
+        urlToId.set(`${selectedSchema.name}${urls[i].base}`, newTabId)
       }
       break
     }
     case 'lookupTermTemporary': {
-      const selectedSchema = searchSchemas.find((s) => s.active)
-      if (selectedSchema === undefined) {
-        return
-      }
+      const selectedSchema = searchSchemas.find((s) => s.active)!
       const urls = selectedSchema.urls
 
       // iterate over all urls
@@ -143,7 +131,7 @@ browser.runtime.onMessage.addListener(async (message: ContentScriptRequest) => {
           url: `${urls[i].base}${urls[i].before.replaceAll(
             ' ',
             urls[i].replaceSpaceWith
-          )}${message.query.replaceAll(' ', urls[i].replaceSpaceWith)}${urls[
+          )}${message.query!.replaceAll(' ', urls[i].replaceSpaceWith)}${urls[
             i
           ].after.replaceAll(' ', urls[i].replaceSpaceWith)}`,
           active: urls[i].active
@@ -153,10 +141,10 @@ browser.runtime.onMessage.addListener(async (message: ContentScriptRequest) => {
       break
     }
     case 'getSearchSchemas': {
-      return await Promise.resolve({ response: JSON.stringify(searchSchemas) })
+      return Promise.resolve({ response: JSON.stringify(searchSchemas) })
     }
     case 'getSearchSchemaNames': {
-      return await Promise.resolve({
+      return Promise.resolve({
         response: searchSchemas.map((s) => {
           return { name: s.name, active: s.active, clear: s.clear }
         })
@@ -187,7 +175,5 @@ browser.runtime.onMessage.addListener(async (message: ContentScriptRequest) => {
 })
 
 browser.browserAction.onClicked.addListener(() => {
-  browser.tabs
-    .create({ url: 'src/options/index.html' })
-    .catch((e) => console.error(e))
+  browser.tabs.create({ url: 'src/options/index.html' })
 })
